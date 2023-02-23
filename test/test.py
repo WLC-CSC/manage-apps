@@ -2,6 +2,7 @@
 import requests
 
 ip = 'localhost'
+ip = '172.16.42.52'
 port = 4006
 
 def post(endpoint, **kwargs):
