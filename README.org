@@ -91,7 +91,7 @@ a list of error messages:
 #+begin_src json
   {
     "status": "error",
-    "messages": ["error_message1", ...]
+    "messages": ["error_message1", "error_message2"]
   }
 #+end_src
 
