@@ -142,11 +142,11 @@ request. The server will respond with a success or error response, but
 messages is now a json object, not simply a flat error. The form is:
 #+begin_src json
   {
-    'status': 'success',
-    'messages': {
-      'running': 'Program is not running',
-      'output': ['Hello, World!'],
-      'errors': ["terminate called after throwing an instance of 'std::runtime_error'", ' what(): bad']
+    "status": "success",
+    "messages": {
+      "running": "Program is not running",
+      "output": ["Hello, World!"],
+      "errors": ["terminate called after throwing an instance of 'std::runtime_error'", " what(): bad"]
     }
   }
 #+end_src
