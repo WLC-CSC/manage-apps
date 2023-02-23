@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CS Board Uploader</title>
+    <script>
+      function dropHandler(event) {
+          console.log('File(s) dropped');
+          
+          // Prevent default behavior of the file being open and rendered in the browser
+          event.preventDefault();
+          
+          if (event.dataTransfer.files) {
+              uploadFile(event.dataTransfer.files[0]);
+          }
+      }
+      
+      function uploadFile(file) {
+          // let url = '172.16.42.52:4006/upload';
+          let url = 'http://localhost:4006/upload';
+          let data = new FormData();
+          console.log(file);
+          data.append(file.name, file);
+          fetch(url, {
+              method: 'POST',
+              body: data
+          })
+              .then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error(error));
+                  
+      }
+      
+      function dragOverHandler(event) {
+          console.log("File(s) in drop zone");
+          event.preventDefault();
+      }
+    </script>
+    <style>
+      .drop_zone {
+      border: 5px solid blue;
+      width: 480px;
+      height: 100px;
+      text-align: center;
+      padding: 160px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="drop_zone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+      <p>Drag your cpp here</p>
+    </div>
+  </body>
+</html> 

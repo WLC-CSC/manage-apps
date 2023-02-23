@@ -1,0 +1,5 @@
+#!/bin/bash
+sbcl --noinform --noprint --disable-debugger \
+     --load manage-apps.asd \
+     --eval '(ql:quickload :manage-apps)' \
+     --eval '(manage-apps:main)'

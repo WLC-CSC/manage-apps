@@ -1,0 +1,12 @@
+[Unit]
+Description=manage-apps server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/manage-apps/
+ExecStart=/usr/bin/screen -D -m /usr/bin/ecl --load manage-apps.lisp --eval "(main)"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,176 @@
+#+title: Running programs with manage-apps
+#+author: Jeffrey M. Brown
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+* Overview
+This lisp program is a tiny web server that facilitates uploading and
+executing C++ programs on the CS Club's bulletin board. You can
+interact with it using http POST requests to do the following things:
+- Upload files to the project
+- Start and stop the program
+- Query information about the current project
+
+This program only provides the services to run a single C++ program
+at a time and only stores the information of the currently running
+program. It is expected that another server will keep a database of
+student programs and provide a graphical interface (web, phone app,
+etc).
+
+* Installing and launching
+** Installing Lisp
+SBCL is the recommended lisp compiler and runtime. Install it using
+#+begin_src bash
+sudo apt install sbcl
+#+end_src
+
+Along with the base installation of Lisp, a few third-party libraries
+are needed. These can be downloaded and install using quicklisp:
+https://www.quicklisp.org/beta/.
+
+Once quicklisp is installed, run ~sbcl~ and install the needed
+dependencies using:
+#+begin_src bash
+(ql:quickload '("hunchentoot" "cl-json" "swank"))
+#+end_src
+Once these are downloaded and sbcl has finished compiling them (a few
+minutes), quit ~sbcl~ by typing ~(quit)~.
+
+** Launching
+This program should be installed on a Raspberry Pi that is directly
+connected to hardware. Create the directory ~manage-apps~ in the
+~home~ folder and copy into it the files ~manage-apps.lisp~,
+~install.sh~, ~manage-apps.service~.
+
+To launch the program and have it start on boot, a systemd service
+file is provided, but you'll have to replace ~USERNAME~ with the
+actual username:
+#+begin_src conf
+[Unit]
+Description=manage-apps server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=USERNAME
+WorkingDirectory=/home/USERNAME/manage-apps/
+ExecStart=/usr/bin/screen -D -m /usr/bin/sbcl --load "manage-apps.asd" --eval "(ql:quickload \"manage-apps\")" --eval "(manage-apps:main)"
+
+[Install]
+WantedBy=multi-user.target
+#+end_src
+
+To install the service file and start the service, run the bash script
+~install.sh~ using sudo (or as root):
+#+begin_src bash
+#!/bin/bash
+cp manage-apps.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable manage-apps.service
+systemctl start manage-apps.service
+#+end_src
+
+* API
+By default, the server will be listening on port 4006. All requests
+made to the server are POSTs made to one of the endpoints described
+below.
+
+** Responses from the server
+After making a request, the server will respond in ~json~ by setting
+~Content-Type: application/json~ in the header. There are two default
+responses: ~success~ and ~error~. If the server could successfully
+process the request, it will respond with:
+#+begin_src json
+  {
+    "status": "success",
+    "messages": []
+  }
+#+end_src
+where "messages" may contain information or warnings as a string.
+
+If the server was unable to process the request, it will respond with
+a list of error messages:
+#+begin_src json
+  {
+    "status": "error",
+    "messages": ["error_message1", ...]
+  }
+#+end_src
+
+** Uploading files: ~/upload~
+Once a project has been created, you can upload a set of files using a
+POST request containing "multipart/form-data". The header specify this
+content type and a boundary to separate multiple files: ~Content-Type=
+multipart/form-data; boundary=5dffa4351d0d444f50e3e4f2fb3492a7~
+header. Here's an example request that uploads the file
+"main.cpp":where the file "main.cpp" is uploaded:
+#+begin_src C++
+  POST /upload HTTP/1.1
+  Content-Type: multipart/form-data; boundary=--5dffa4351d0d444f50e3e4f2fb3492a7
+  Content-Length: 478
+                                         
+  --5dffa4351d0d444f50e3e4f2fb3492a7
+  Content-Disposition: form-data; name="main.cpp"; filename="main.cpp"
+
+  #include <iostream>
+  #include <chrono>
+  #include <thread>
+
+  int main() {
+      while (true) {
+          std::cout << "Hello, World!\n" << std::flush;
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+      }
+  }
+
+  --5dffa4351d0d444f50e3e4f2fb3492a7--
+#+end_src
+
+The server will respond with a success or error response, which
+possibly contains messages related to bad file upload types or C++
+compilation warnings or errors.
+
+** Start program: ~/start~
+To start running your program, make an empty POST request. The server
+will respond with a success or error response.
+
+** Stop program: ~/stop~
+To stop the currently running program make an empty POST request. The
+server will respond with a success or error response.
+
+** Query program info: ~/info~
+To receive information about the current project make an empty POST
+request. The server will respond with a success or error response, but
+messages is now a json object, not simply a flat error. The form is:
+#+begin_src json
+  {
+    'status': 'success',
+    'messages': {
+      'running': 'Program is not running',
+      'output': ['Hello, World!'],
+      'errors': ["terminate called after throwing an instance of 'std::runtime_error'", ' what(): bad']
+    }
+  }
+#+end_src
+As you can see above, messages contains 3 fields: whether the program
+is running, any output of the program, and any error messages that are
+generated.
+
+* Lisp programming
+In Lisp you can modify code while a program is running. This means
+that the server never needs to be restarted - you simply update the
+running lisp code. When the server is started an additional thread is
+spawned which starts a lisp communication server called ~swank~. The
+~swank~ server listens on port 4005 for communications from client
+called ~slime~ which you install inside emacs.
+
+Once the server is up and running you can connect to it by setting up
+an ssh tunnel with local port forwarding:
+#+begin_src bash
+ssh -L4005:localhost:4005 username@hostname
+#+end_src
+Then connect your local emacs client to the remote lisp program using
+~M-x slime-connect~. To compile and send lisp code to the running
+server, move your cursor onto the lisp form and press ~C-c C-c~. The
+server's running code is now updated.
+
+
+
