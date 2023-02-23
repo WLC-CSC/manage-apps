@@ -49,9 +49,11 @@
   "Build the C++ project"
   (with-accessors ((wd project-working-directory) (files project-files)) project
     (let ((executable-filename (namestring (merge-pathnames "main.out" wd)))
-          (filenames (mapcar #'namestring files)))
+          (filenames (mapcar #'namestring files))
+          (linking-flags '("-L/home/board/rpi-rgb-led-matrix/lib" "-lrgbmatrix" "-lpthread"))
+          (include-flags "-I/home/board/rpi-rgb-led-matrix/include"))
       (multiple-value-bind (output error-message exit-code)
-          (uiop:run-program `("g++" ,@filenames "-o" ,executable-filename)
+          (uiop:run-program `("g++" ,@filenames ,@linking-flags ,include-flags "-o" ,executable-filename)
                             :ignore-error-status t :output :string :error-output :string)
           
         (if (= exit-code 0)
@@ -82,7 +84,7 @@
           (error 'board-error :text "Project is already running")
           (uiop:close-streams process)))
     (setf executable (namestring (merge-pathnames "main.out" *directory*)))
-    (setf process (uiop:launch-program executable :output :stream :error-output :stream))
+    (setf process (uiop:launch-program `("sudo" ,executable) :output :stream :error-output :stream))
     nil))
 
 (defgeneric project-stop (project)
