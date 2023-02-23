@@ -4,9 +4,9 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/manage-apps/
-ExecStart=/usr/bin/screen -D -m /usr/bin/ecl --load manage-apps.lisp --eval "(main)"
+User=board
+WorkingDirectory=/home/board/manage-apps/
+ExecStart=/usr/bin/screen -D -m install/run
 
 [Install]
 WantedBy=multi-user.target
