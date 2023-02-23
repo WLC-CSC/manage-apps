@@ -139,7 +139,8 @@ server will respond with a success or error response.
 ** Query program info: ~/info~
 To receive information about the current project make an empty POST
 request. The server will respond with a success or error response, but
-messages is now a json object, not simply a flat error. The form is:
+"messages" is now a json object, not simply a flat array of
+strings. The form is:
 #+begin_src json
   {
     "status": "success",
@@ -150,9 +151,9 @@ messages is now a json object, not simply a flat error. The form is:
     }
   }
 #+end_src
-As you can see above, messages contains 3 fields: whether the program
-is running, any output of the program, and any error messages that are
-generated.
+As you can see above, "messages" contains 3 fields: whether the
+program is running, any output of the program, and any error messages
+that were generated.
 
 * Lisp programming
 In Lisp you can modify code while a program is running. This means
