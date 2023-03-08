@@ -4,10 +4,43 @@
 <head>
   <title>CS Board Uploader</title>
   <script>
+    // let url = '172.16.42.52:4006/';
+    let url = 'http://localhost:4006/';
     window.addEventListener("load", function () {
+      // Clear message button
       document.getElementById("clearMsg").addEventListener("click", function () {
         document.getElementById("messages").innerHTML = "";
-      })
+      });
+
+      // Start button
+      document.getElementById("start").addEventListener("click", function () {
+        fetch(`${url}start`, {
+          method: 'POST',
+        })
+          .then(response => response.json())
+          .then(data => showMessage(data.messages, false))
+          .catch(error => console.error(error));
+      });
+
+      // Stop button
+      document.getElementById("stop").addEventListener("click", function () {
+        fetch(`${url}stop`, {
+          method: 'POST',
+        })
+          .then(response => response.json())
+          .then(data => showMessage(data.messages, false))
+          .catch(error => console.error(error));
+      });
+
+      // Get Info button
+      document.getElementById("info").addEventListener("click", function () {
+        fetch(`${url}info`, {
+          method: 'POST',
+        })
+          .then(response => response.json())
+          .then(data => showMessage(data.messages, false))
+          .catch(error => console.error(error));
+      });
     });
     function dropHandler(event) {
       console.log('File(s) dropped');
@@ -16,24 +49,24 @@
       event.preventDefault();
 
       if (event.dataTransfer.files) {
-        uploadFile(event.dataTransfer.files[0]);
+        uploadFile(event.dataTransfer.files);
       }
     }
 
-    function uploadFile(file) {
-      // let url = '172.16.42.52:4006/upload';
-      let url = 'http://localhost:4006/upload';
+    function uploadFile(files) {
       let data = new FormData();
-      //console.log(file);
-      data.append(file.name, file);
-      fetch(url, {
+      console.log(files);
+      for (let i = 0; i < files.length; ++i) {
+        let file = files[i];
+        data.append(file.name, file);
+      }
+      fetch(`${url}upload`, {
         method: 'POST',
         body: data
       })
         .then(response => response.json())
         .then(data => showMessage(data.messages, false))
         .catch(error => console.error(error));
-
     }
 
     function dragOverHandler(event) {
@@ -85,21 +118,37 @@
       margin-top: 20px;
     }
 
+    .btn-container {
+      display: grid;
+      grid-template-columns: 33% 33% 33%;
+      margin-top: 20px;
+    }
+
     .button {
       font-size: 18px;
       padding: 10px 10px;
+      margin-left: 20px;
       background-color: lightgray;
       text-align: center;
       text-decoration: none;
       cursor: pointer;
+      border: 1px solid darkgray;
+      border-radius: 15px;
     }
   </style>
 </head>
 
 <body>
   <div class="main-container">
-    <div class="drop_zone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
-      <p>Drag your cpp here</p>
+    <div>
+      <div class="drop_zone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+        <p>Drag your cpp(s) here</p>
+      </div>
+      <div class="btn-container">
+        <div id="start" class="button">Start Program</div>
+        <div id="stop" class="button">Stop Program</div>
+        <div id="info" class="button">Get Info</div>
+      </div>
     </div>
     <div class="messages">
       <div class="msg-heading-grid">
