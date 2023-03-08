@@ -83,6 +83,15 @@
       document.getElementById("messages").innerHTML = currentMsg;
     }
 
+    function browseFiles() {
+      let selectElement = document.getElementById("selectFile");
+      selectElement.click();
+      selectElement.onchange = function () {
+        let files = selectElement.files;
+        uploadFile(files);
+      }
+    }
+
   </script>
   <style>
     * {
@@ -110,6 +119,7 @@
       padding: 160px 0;
       margin-top: 20px;
       margin-left: 20px;
+      font-size: 20px;
     }
 
     .msg-heading-grid {
@@ -135,6 +145,15 @@
       border: 1px solid darkgray;
       border-radius: 15px;
     }
+
+    .browse {
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    #selectFile {
+      display: none;
+    }
   </style>
 </head>
 
@@ -142,7 +161,9 @@
   <div class="main-container">
     <div>
       <div class="drop_zone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
-        <p>Drag your cpp(s) here</p>
+        <p>Drag your cpp(s) here<br>or</p>
+        <input class="button" type="button" value="Browse File(s)" onclick="browseFiles();" />
+        <input type="file" id="selectFile" multiple />
       </div>
       <div class="btn-container">
         <div id="start" class="button">Start Program</div>
