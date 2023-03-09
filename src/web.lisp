@@ -36,6 +36,7 @@
 
 ;;; endpoints
 (hunchentoot:define-easy-handler (upload :uri "/upload") ()
+  (setf (hunchentoot:header-out "Access-Control-Allow-Origin") "*")
   (setf (hunchentoot:content-type*) "application/json")
   (when (eq (hunchentoot:request-method hunchentoot:*request*) :post)
     (with-response
@@ -74,6 +75,7 @@ files"
     collect new-filepath))
 
 (hunchentoot:define-easy-handler (start :uri "/start") ()
+  (setf (hunchentoot:header-out "Access-Control-Allow-Origin") "*")
   (setf (hunchentoot:content-type*) "application/json")
   (when (eq (hunchentoot:request-method hunchentoot:*request*) :post)
     (with-response
@@ -83,6 +85,7 @@ files"
 
 
 (hunchentoot:define-easy-handler (stop :uri "/stop") ()
+  (setf (hunchentoot:header-out "Access-Control-Allow-Origin") "*")
   (setf (hunchentoot:content-type*) "application/json")
   (when (eq (hunchentoot:request-method hunchentoot:*request*) :post)
     (with-response
@@ -93,6 +96,7 @@ files"
 
 
 (hunchentoot:define-easy-handler (info :uri "/info") ()
+  (setf (hunchentoot:header-out "Access-Control-Allow-Origin") "*")
   (setf (hunchentoot:content-type*) "application/json")
   (when (eq (hunchentoot:request-method hunchentoot:*request*) :post)
     (with-response
