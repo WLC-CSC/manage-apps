@@ -52,7 +52,7 @@
           (linking-flags '("-L/home/board/rpi-rgb-led-matrix/lib" "-lrgbmatrix" "-lpthread"))
           (include-flags "-I/home/board/rpi-rgb-led-matrix/include"))
       (let* ((filenames (mapcar #'namestring files))
-             (cpp-files (remove-if-not (lambda (path) (string= "cpp" (pathname-type))) filenames)))
+             (cpp-files (remove-if-not (lambda (path) (string= "cpp" (pathname-type path))) filenames)))
         (multiple-value-bind (output error-message exit-code)
             (uiop:run-program `("g++" ,@cpp-files ,@linking-flags ,include-flags "-o" ,executable-filename)
                               :ignore-error-status t :output :string :error-output :string)
