@@ -49,18 +49,19 @@
   "Build the C++ project"
   (with-accessors ((wd project-working-directory) (files project-files)) project
     (let ((executable-filename (namestring (merge-pathnames "main.out" wd)))
-          (filenames (mapcar #'namestring files))
           (linking-flags '("-L/home/board/rpi-rgb-led-matrix/lib" "-lrgbmatrix" "-lpthread"))
           (include-flags "-I/home/board/rpi-rgb-led-matrix/include"))
-      (multiple-value-bind (output error-message exit-code)
-          (uiop:run-program `("g++" ,@filenames ,@linking-flags ,include-flags "-o" ,executable-filename)
-                            :ignore-error-status t :output :string :error-output :string)
+      (let* ((filenames (mapcar #'namestring files))
+             (cpp-files (remove-if-not (lambda (path) (string= "cpp" (pathname-type))) filenames)))
+        (multiple-value-bind (output error-message exit-code)
+            (uiop:run-program `("g++" ,@cpp-files ,@linking-flags ,include-flags "-o" ,executable-filename)
+                              :ignore-error-status t :output :string :error-output :string)
           
-        (if (= exit-code 0)
-            (progn
-              (setf (project-executable project) executable-filename)
-              (concatenate 'string output error-message))
-            (error 'board-error :text error-message))))))
+          (if (= exit-code 0)
+              (progn
+                (setf (project-executable project) executable-filename)
+                (concatenate 'string output error-message))
+              (error 'board-error :text error-message)))))))
 
 
 (defun clear-project ()
