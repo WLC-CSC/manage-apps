@@ -78,7 +78,14 @@
       if (!clear) {
         currentMsg = document.getElementById("messages").innerHTML;
       }
-      msgList.forEach(msg => currentMsg += `<br>${msg}`);
+      if (Array.isArray(msgList)) {
+        msgList.forEach(msg => currentMsg += `<br>${msg}`);
+      }
+      else {
+        for (const [key, value] of Object.entries(msgList)) {
+          currentMsg += `<br>${key}: ${value}`;
+          }
+      }
       document.getElementById("messages").innerHTML = currentMsg;
     }
 
