@@ -32,8 +32,8 @@
   "Verify that the C++ project is correctly configured"
   (with-accessors ((files project-files)) project
     (unless (and (> (length files) 0)
-                 (some (lambda (path) (string= "main.cpp" (file-namestring path))) files))
-      (let ((msg "C++ projects must contain a filename 'main.cpp', received these files instead ~a")
+                 (some (lambda (path) (string= "cpp" (pathname-type path))) files))
+      (let ((msg "C++ projects must contain a least one cpp file, received these files instead ~a")
             (filenames (mapcar #'file-namestring files)))
         (error 'board-error :text (format nil msg filenames))))))
 
