@@ -55,7 +55,7 @@
       (let* ((filenames (mapcar #'namestring files))
              (cpp-files (remove-if-not (lambda (path) (string= "cpp" (pathname-type path))) filenames)))
         (multiple-value-bind (output error-message exit-code)
-            (uiop:run-program `("g++" ,@compile-flags ,@linking-flags ,@include-flags ,@cpp-files "-o" ,executable-filename)
+            (uiop:run-program `("g++" ,@compile-flags ,@include-flags ,@cpp-files ,@linking-flags "-o" ,executable-filename)
                               :ignore-error-status t :output :string :error-output :string)
           
           (if (= exit-code 0)
