@@ -51,11 +51,11 @@
     (let ((executable-filename (namestring (merge-pathnames "main.out" wd)))
           (compile-flags '("-D BOARD"))
           (linking-flags '("-L/home/board/rpi-rgb-led-matrix/lib" "-lrgbmatrix" "-lpthread"))
-          (include-flags "-I/home/board/rpi-rgb-led-matrix/include"))
+          (include-flags '("-I/home/board/rpi-rgb-led-matrix/include")))
       (let* ((filenames (mapcar #'namestring files))
              (cpp-files (remove-if-not (lambda (path) (string= "cpp" (pathname-type path))) filenames)))
         (multiple-value-bind (output error-message exit-code)
-            (uiop:run-program `("g++" ,@cpp-files ,@linking-flags ,include-flags "-o" ,executable-filename)
+            (uiop:run-program `("g++" ,@compile-flags ,@linking-flags ,@include-flags ,@cpp-files "-o" ,executable-filename)
                               :ignore-error-status t :output :string :error-output :string)
           
           (if (= exit-code 0)
