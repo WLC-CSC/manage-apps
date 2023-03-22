@@ -49,6 +49,7 @@
   "Build the C++ project"
   (with-accessors ((wd project-working-directory) (files project-files)) project
     (let ((executable-filename (namestring (merge-pathnames "main.out" wd)))
+          (compile-flags '("-D BOARD"))
           (linking-flags '("-L/home/board/rpi-rgb-led-matrix/lib" "-lrgbmatrix" "-lpthread"))
           (include-flags "-I/home/board/rpi-rgb-led-matrix/include"))
       (let* ((filenames (mapcar #'namestring files))
