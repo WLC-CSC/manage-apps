@@ -8,7 +8,7 @@
 ;; error handling settings
 (setf hunchentoot:*catch-errors-p* nil) ;; setf t in production
 
- (defun main ()
+(defun main ()
   (swank:create-server :port *port-swank* :dont-close t)
   (setf *server* (make-instance 'hunchentoot:easy-acceptor :port *port-server*))
   (hunchentoot:start *server*))
