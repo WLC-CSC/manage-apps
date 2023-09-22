@@ -45,16 +45,16 @@
 
 (defun upload-files (parameters)
   "Move the uploaded files into the scratch directory and create a project"
-  ;; create an empty scratch directory
-  (make-scratch-directory)
-
   ;; clear any current project
   (when *project*
     (project-cleanup *project*))
 
+  ;; create an empty scratch directory
+  (make-scratch-directory)
+  (print parameters)
   ;; move files to scratch, create project, and build it
   (let* ((uploaded-files (move-files-to-scratch-directory parameters))
-         (project (make-cpp-project *directory* uploaded-files))
+         (project (make-project *directory* uploaded-files))
          (result (project-build project)))
     (setf *project* project)
     result))
