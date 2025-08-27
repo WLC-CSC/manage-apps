@@ -1,33 +1,25 @@
-"""Test interacting with manage apps"""
-import requests
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
-ip = 'localhost'
-ip = '172.16.42.52'
-port = 4006
+import sys
 
-def post(endpoint, **kwargs):
-    """Send data using an HTTP post"""
-    url = f'http://{ip}:{port}/{endpoint}'
-    r = requests.post(url, **kwargs)
-    if r.ok:
-        print(r.json())
-    else:
-        print(r.text)
+# Configuration for the matrix
+options = RGBMatrixOptions()
+options.rows = 32
+options.cols = 64
+options.chain_length = 4
+options.hardware_mapping = "adafruit-hat-pwm"
+options.pixel_mapper_config = "V-mapper:Rotate:90"
+options.gpio_slowdown = 4
+options.drop_privileges = True
 
-def upload(filename):
-    with open(filename, 'rb') as f:
-        post('upload', files={filename: f})
+matrix = RGBMatrix(options=options)
+canvas = matrix.CreateFrameCanvas()
 
-def start():
-    post('start')
-
-def stop():
-    post('stop')
-
-def info():
-    post('info')
-        
-if __name__ == '__main__':
-    filename = 'main.cpp'
-    #filename = 'test.py'
-    upload(filename)
+height = options.cols * options.chain_length
+width = options.rows * options.chain_length
+x, y = 0, 0
+while True:
+    canvas.Clear()
+    canvas.SetPixel(y, x, 255, 0, 0)
+    x = (x+1) % width
+    canvas = matrix.SwapOnVSync(canvas)
