@@ -1,6 +1,7 @@
 #+title: Running programs with manage-apps
 #+author: Jeffrey M. Brown
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+setupfile: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+
 * Overview
 This lisp program is a tiny web server that facilitates uploading and
 executing C++ programs on the CS Club's bulletin board. You can
